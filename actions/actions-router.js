@@ -57,6 +57,7 @@ router.put('/:id', (req, res) => {
             res.status(500).json({ message: 'Action could not be updated'})
         })
 })
+
 router.delete('/:id', (req, res) => {
     const { id } = req.params;
     Actions.remove(id)

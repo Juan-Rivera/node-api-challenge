@@ -4,42 +4,65 @@ const Projects = require('../data/helpers/projectModel');
 const router = express.Router();
 
 router.get('/', (req, res) => {
-    const { id } = req.params;
-    if(id){
-        Projects.get(id)
-            .then(project => {
-                if (project) {
-                res.status(200).json(project);
-                } else {
-                res.status(404).json({ message: 'Project not found' });
-                }
-            })
-            .catch(error => {
-                console.log(error);
-                res.status(500).json({ message: 'Error retrieving the project'});
-            })
-    } else{
-        Projects.get(req.query)
+    
+        Projects.get()
             .then(projects => {
                 res.status(200).json(projects);
             })
             .catch(err => {
                 console.log(err);
-                res.status({ message: 'Error retrieving the projects'});
+                res.status(500).json({ message: 'Projects could not be fetched'});
             })
-    }
     
 })
+
+router.get('/:id', (req, res) => {
+    const { id } = req.params;
+    Projects.get(id)
+        .then(project => {  
+            res.status(200).json(project);
+        })
+        .catch(error => {
+            console.log(error);
+            res.status(500).json({ message: 'Project could not be fetched'});
+        })
+})
+
 router.post('/', (req, res) => {
     const project = req.body;
     Projects.insert(project)
+        .then(project => {
+            res.status(201).json(project)
+        })
+        .catch(err => {
+            console.log(err)
+            res.status(500).json({ message: 'New project could not be stored'})
+        })
 })
-router.put('/', (req, res) => {
+
+router.put('/:id', (req, res) => {
     const { id } = req.params;
-    Projects.update(id)
+    const updatedProject = req.body;
+    Projects.update(id, updatedProject)
+        .then(project => {
+            res.status(200).json(project)
+        })
+        .catch(err => {
+            console.log(err)
+            res.status(500).json({ message: 'Project could not be updated'})
+        })
 })
-router.delete('/', (req, res) => {
+
+router.delete('/:id', (req, res) => {
     const { id } = req.params;
     Projects.remove(id)
+        .then(project => {
+            res.status(200).json(project)
+        })
+        .catch(err => {
+            console.log(err)
+            res.status(500).json({ message: 'Project could not be deleted'})
+        })
 })
+
 module.exports = router;

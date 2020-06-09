@@ -1,32 +1,24 @@
 const express = require('express'); // importing a CommonJS module
 const morgan = require('morgan');
-const projectsRouter = require('./projects/projects-router')
 
+// rotuer imports
+const projectRouter = require('./projects/projects-router')
+const actionRouter = require('./actions/actions-router')
+
+// server
 const server = express();
 
-// id gatekeeper so that any action with an id of 3 cannot be posted
-function idGatekeeper(req, res, next){
-    const { id } = req.params;
-    if(id === 3){
-      res.status(403).json({message: 'ID cannot be found!'});
-    } else{
-      next();
-    }
- }
-
-server.use(idGatekeeper);
-server.use(morgan('dev'))
+server.use(morgan('dev')) //logging middleware
 server.use(express.json()); // built in middleware
 
-//server.use('/api/helpers', projectsRouter)
+server.use('/api/projects', projectRouter)
+server.use('/api/actions', actionRouter)
+
+//custom middleware
+
 
 server.get('/', (req, res) => {
-  const nameInsert = (req.name) ? ` ${req.name}` : '';
-
-  res.send(`
-    <h2>Lambda Hubs API</h2>
-    <p>Welcome${nameInsert} to the Lambda Hubs API</p>
-    `);
+  res.send('Server is running');
 });
 
 
